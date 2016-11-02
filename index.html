@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/animatescroll.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="js/scripts.js"></script>
+    <script src="js/retina.min.js"></script>
+
+    <title>Dashboard - Github Events by Jian Ma</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- CSS 
+        ================================================== -->
+    <!-- Bootstrap 3-->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900,200italic,300italic,400italic,600italic,700italic,900italic|Roboto+Condensed:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:300italic,400italic,700italic,400,300,700' rel='stylesheet' type='text/css'>
+    <!-- Template Styles -->
+    <link href="css/style.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+	<div ng-app="myApp" ng-controller="myCtrl">
+	  <!-- NAVBAR
+	      ================================================== -->
+	  <nav class="navbar navbar-default" role="navigation">
+	  	  <div class="container">
+			  <div class="navbar-header">
+			    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+			      <span class="sr-only">Dashboard</span>
+			      <span class="icon-bar"></span>
+			      <span class="icon-bar"></span>
+			      <span class="icon-bar"></span>
+			    </button>
+			    <a class="navbar-brand" href="#">Github Events Dashboard by Jian Ma</a>
+			  </div>
+			  <div class="collapse navbar-collapse navbar-ex1-collapse">
+			    <ul class="nav navbar-nav">
+			      <li><a onclick="$('header').animatescroll({padding:71});">Top</a></li>
+			      <li><a onclick="$('.dashboardbody').animatescroll({padding:71});">Dashboard</a></li>
+			      <li><a ng-click="reloadRoute()">Refresh</a></li>
+			      <li><a onclick="$('.social').animatescroll({padding:71});">Social	</a></li>
+			    </ul>
+			  </div>
+		  </div>
+	  </nav>
+	   <!-- HEADER
+	   ================================================== -->	  
+	  <header>
+		 <div class="container">
+			 <div class="row">
+				 <div class="col-md-12">
+					  <h1>Github Events</h1>
+					  <p class="lead">This is an Awesome Github Events Dashboard Page</p> 
+				</div>	  
+			</div>    
+		</div>
+	 </header>
+	  
+	  
+	   <!-- Main Dashboard body
+	      ================================================== -->
+	  <!--<section class="dashboardbody">
+		  <div class="container">
+			  <div class="row">
+				  <div class="col-md-offset-0 col-md-16">
+					 <div class="panel-group" id="accordion">
+					 	<script>
+					 		//$.getJSON("events.json",function(data){
+					 		$.getJSON("https://api.github.com/events",function(data){
+					 			var htmlStr = "";
+								for(var i=data.length-1; i>=0; i--){
+							 		htmlStr =  "<div class=\"panel panel-default\"><div class=\"panel-heading\"><h4 class=\"panel-title\"><a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse" + i + "\"> Event No. " + (i+1) + " . Username: "+ data[i].actor.login + ", Event Type: "+ data[i].type + ", Repository: "+ data[i].repo.name + "</a></h4></div><div id=\"collapse" + i + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\">" + data[i].actor.display_login + "<img src=\"" + data[i].actor.avatar_url + "\" class=\"img-responsive\" >"+ "<a href=\"" + data[i].actor.avatar_url + "\">" + data[i].actor.display_login + "</a></div></div></div>";
+							 		$("#accordion").prepend(htmlStr);
+							 		
+						 		}
+							});
+					 	</script>
+					 </div>
+				  </div>
+			  </div>
+		  </div>
+	  </section>-->
+	 
+	<section class="dashboardbody">
+		<div class="container">
+		 	<div class="row">
+		 		<div class="col-md-offset-0 col-md-16">
+		 			<div class="panel-group" id="accordion">
+		 				<div class="panel panel-default" data-ng-repeat="e in eventList">
+		 					<div class="panel-heading">
+		 						<h4 class="panel-title">
+					 				<a data-toggle="collapse" data-parent="#accordion" href="#collapse{{e.idxId+1}}"> Event No. {{e.idxId+1}} Username: {{e.actor.login}}, Event Type: {{e.type}}, Repository: {{e.repo.name}}</a>
+					 			</h4>
+					 		</div>
+					 		<div id="collapse{{e.idxId+1}}" class="panel-collapse collapse">
+					 			<div class="panel-body">
+					 				<div class="col-md-4">
+					 					<h2>Actor Name: </h2>
+					 					<div>
+							 				<h3><a href="{{e.userUrl}}">{{e.actor.login}}</a></h3>
+							 				<img class="aligncenter" src="{{e.actor.avatar_url}}" class="img-responsive" alt="Cinque Terre" width=40% height=40%>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<h2>Repository Name:</h2>
+										<div>
+											<h3><a href= "{{e.repoUrl}}">  {{e.repo.name}}  </a></h3>
+											<img class="aligncenter" src="{{e.repoAvatarUrl}}" class="img-responsive" alt="Cinque Terre" width=40% height=40%>
+									 	</div>
+									</div>
+									<div class="col-md-4">
+										<table class="table">
+											<caption>User Performed Events</caption>
+											<thead>
+												<tr>
+													<th>Event ID</th>
+													<th>Event Type</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>{{e.eventList[0].id}}</td>
+													<td>{{e.eventList[0].type}}</td>
+												</tr>
+												<tr>
+													<td>{{e.eventList[1].id}}</td>
+													<td>{{e.eventList[1].type}}</td>
+												</tr>
+												<tr>
+													<td>{{e.eventList[2].id}}</td>
+													<td>{{e.eventList[2].type}}</td>
+												</tr>
+												<tr>
+													<td>{{e.eventList[3].id}}</td>
+													<td>{{e.eventList[3].type}}</td>
+												</tr>
+												<tr>
+													<td>{{e.eventList[4].id}}</td>
+													<td>{{e.eventList[4].type}}</td>
+												</tr>
+												<tr>
+													<td>{{e.eventList[5].id}}</td>
+													<td>{{e.eventList[5].type}}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	  <!--<section class="test">
+		  <div class="container"  ng-app="myApp" ng-controller="myCtrl" data-ng-init="load()">
+			  <div class="row">
+				  <div class="col-md-offset-0 col-md-16">
+					 <div class="panel-group" id="accordion">
+					 	<div class="panel panel-default">
+					 		<div class="panel-heading">
+					 			<h4 class="panel-title">
+					 				<a data-toggle="collapse" data-parent="#accordion" href="#collapse31"> Event No. 1 Username: aaaaaa, Event Type: bbbbbbbb, Repository: cccccccc</a>
+					 			</h4>
+					 		</div>
+					 	<div id="collapse31" class="panel-collapse collapse">
+					 		<div class="panel-body">
+					 			<div class="col-md-4">
+									<h2>Actor Name: </h2>
+						 			<div>
+						 				<h3><a href="{{userData1.html_url}}">{{userData1.login}}</a></h3>
+						 				<img src="{{userData1.avatar_url}}" class="img-responsive" alt="Cinque Terre" width=40% height=40%>
+									</div>
+								</div>
+								<div class="col-md-4">
+									<h2>Repository Name:</h2>
+									<div>
+										<h3><a href= "{{repo1.html_url}}">  {{repo1.name}}  </a></h3>
+										<script>
+									 		/*$.getJSON("https://api.github.com/repos/learn-co-curriculum/react-actions",function(data){
+									 			$("#myTest1").prepend("<h3><a href=\"" + data.html_url +"\">" + data.name + "</a></h3>");
+											});*/
+									 	</script>
+								 	</div>
+								</div>
+								<div class="col-md-4">
+									<h2>Org Name: </h2>
+									<h3>learn-co-curriculum</h3>
+						 			<div id='myTest3'>
+										<img src="https://avatars.githubusercontent.com/u/6208017?" class="img-responsive" alt="Cinque Terre" width=40% height=40%>
+									</div>
+								</div>
+					 		</div>	
+					 	</div>
+					 </div>
+				  </div>
+			  </div>
+		  </div>
+	  </section>-->
+	
+	 <!-- SOCIAL
+	     ================================================== -->
+	  <section class="social">
+	  	<div class="container">
+	  		  <div class="row">
+	  			  <div class="col-md-12">
+	  			  	<h2>Connect with me</h2>
+	  			   	<a class="icon-facebook" href="https://www.facebook.com/jian.ma.73594"></a>
+	  			   	<a class="icon-twitter" href="https://twitter.com/?lang=en"></a>
+	  			   	<a class="icon-google" href="https://plus.google.com/106372559844185081134"></a>
+	  			   	<a class="icon-instagram" href="https://www.instagram.com/?hl=en"></a>
+	  			   	<a class="icon-linkedin" href="https://www.linkedin.com/in/jian-ma-27761757"></a>
+	  			   </div>
+	  		  </div>
+	  	  </div>	  
+	  </section>
+	  
+	
+	 <!-- GET IT 
+	     ================================================== -->
+	  <section class="get-it">
+	  	<div class="container">
+	  		<div class="row">
+	  			<div class="col-md-12">
+	  				<hr />
+		  			<ul>
+	                	<li><a href=mailto:mjandtx@gmail.com>Jian Ma</a></li>
+	                	<li><a href=mailto:mjandtx@gmail.com>mjandtx@gmail.com</a></li>
+	                	<li><a href=mailto:mjandtx@gmail.com>972-363-3841</a></li>
+                	</ul>
+	  			</div>
+	  		</div>
+	  	</div>
+	  </section>
+  	</div>
+  </body>
+      <script>
+		//var app = angular.module('myApp',[]);
+
+		/*app.factory('getData',function($http,$q){
+		    return function(str){
+		        var defer = $q.defer();
+		        $http.get(str).success(function(data,status,headers,congfig){
+		            defer.resolve(data);
+		        }).error(function(data,status,headers,congfig){
+		        	console.log(data);
+		            defer.reject(data);
+		        });
+		        return defer.promise
+		    }
+		});
+		function sleep(numberMillis) { 
+			var now = new Date(); 
+			var exitTime = now.getTime() + numberMillis; 
+			while (true) { 
+				now = new Date(); 
+				if (now.getTime() > exitTime) 
+				return; 
+			} 
+		}
+		var events = $.getJSON('https://api.github.com/events',function(data){
+					//console.log(data);
+					var $scope = 
+					return data;
+				});
+		sleep(500);
+		app.controller('myCtrl',function($scope,getData){
+			$scope.eventList = new Array();
+			for(i=0;i<events.responseJSON.length;i++)
+			{
+				$scope.eventList[i] = events.responseJSON[i];
+				$scope.eventList[i].idxId = i;
+			}
+			$scope.userData1 = getData('https://api.github.com/users/majian55555');
+			$scope.repo1 = getData('https://api.github.com/repos/learn-co-curriculum/react-actions');
+			//$scope.userEvents = getData('https://api.github.com/users/aturkewi/events');
+			console.log($scope.eventList);
+			console.log($scope.userData1);
+			console.log($scope.repo1);
+			//console.log($scope.userEvents);
+			//console.log(events);
+		});*/
+		//sleep(500);
+
+		    //$scope.userData1 = getData('https://api.github.com/users/majian55555');
+		    //console.log($scope.userData1);
+		    //$scope.repo1 = getData('https://api.github.com/repos/learn-co-curriculum/react-actions');
+		    //console.log($scope.repo1);
+		    //$scope.userEvents = getData('https://api.github.com/users/aturkewi/events');
+		    //console.log($scope.userEvents);
+		//});
+		/*var app = angular.module('myApp', []);
+		app.controller('personCtrl', ['$scope','$http', function($scope, $http) {
+			$http.get('https://api.github.com/users/aturkewi').success(function (data) {
+		        console.log(data);
+		        $scope.item = data.login;
+		    });
+			//$scope.user1 = $.getJSON("https://api.github.com/users/aturkewi",function(data){return data;});
+			console.log($scope.item);
+		}]);*/
+ 	</script>
+</html>
